@@ -283,9 +283,7 @@ Exemplo de resposta
 ```
 
 ## Configuração de ambiente local
-<H1>WORKING ...</H1>
-![img_1.png](img_1.png)
+<H1>WORKING ...:construction_worker:</H1>
 
 ## Configurações com o acelerador DAX
-<H1>WORKING ...</H1>
-![img_1.png](img_1.png)
+<H1>WORKING ...:construction_worker:</H1>
