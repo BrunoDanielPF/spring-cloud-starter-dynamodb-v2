@@ -1,0 +1,1 @@
+# spring-cloud-starter-dynamodb-v2
