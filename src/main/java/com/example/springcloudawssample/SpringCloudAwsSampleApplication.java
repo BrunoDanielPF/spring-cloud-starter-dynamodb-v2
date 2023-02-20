@@ -21,7 +21,7 @@ public class SpringCloudAwsSampleApplication {
     ApplicationRunner applicationRunner(DynamoDbEnhancedClient dynamoDbEnhancedClient) {
         return args -> {
             try {
-                dynamoDbEnhancedClient.table("tweet", TableSchema.fromBean(Customer.class)).createTable();
+                dynamoDbEnhancedClient.table("customer", TableSchema.fromBean(Customer.class)).createTable();
             } catch (Exception e) {
                 LOGGER.error("Error during creating a DynamoDB table");
             }
