@@ -10,8 +10,8 @@
       1. [Como declarar dependencia](#como-declarar-dependência)
       2. [Modelagem da entidade](#modelagem-da-entidade)
       3. [Realizando operações no dynamodb](#realizando-operações-no-dynamodb)
-2. [Configuração de ambiente local](x):construction_worker:
-3. [Configurações com o acelerador DAX](x)
+2. [Configuração de ambiente local](#configuração-de-ambiente-local):construction_worker:
+3. [Configurações com o acelerador DAX](#configurações-com-o-acelerador-dax):construction_worker:
 
 
 ## solução starter-dynamodb
