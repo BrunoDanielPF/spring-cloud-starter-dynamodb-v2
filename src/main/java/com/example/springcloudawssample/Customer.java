@@ -8,12 +8,12 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 @DynamoDbBean
 public class Customer {
     private String id;
-    private String name;
+    private String nameCustomer;
     private String age;
 
-    public Customer(String name, String age) {
+    public Customer(String nameCustomer, String age) {
         this.id = UUID.randomUUID().toString();
-        this.name = name;
+        this.nameCustomer = nameCustomer;
         this.age = age;
     }
 
@@ -29,16 +29,16 @@ public class Customer {
         this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNameCustomer(String nameCustomer) {
+        this.nameCustomer = nameCustomer;
     }
 
     public void setAge(String age) {
         this.age = age;
     }
 
-    public String getName() {
-        return name;
+    public String getNameCustomer() {
+        return nameCustomer;
     }
 
     public String getAge() {

@@ -30,27 +30,27 @@ class CustomerController {
 
     @PostMapping("/customers")
     void create(@RequestBody CustomerDto customerDto) {
-        LOGGER.info("Creating tweet: {}", customerDto);
-        dynamoDbTemplate.save(new Customer(customerDto.name(), customerDto.age()));
+        LOGGER.info("Creating customer: {}", customerDto);
+        dynamoDbTemplate.save(new Customer(customerDto.nameCustomer(), customerDto.age()));
     }
     @GetMapping("register/{id}")
     Customer getById(@PathVariable String id){
-        LOGGER.info("get tweet by id: {}", id);
+        LOGGER.info("get customer by id: {}", id);
        return dynamoDbTemplate.load(Key.builder().partitionValue(id).build(), Customer.class);
     }
     @PutMapping
     void test(Customer w) {
-        LOGGER.info("update tweet: {}", w);
+        LOGGER.info("update customer: {}", w);
         dynamoDbTemplate.update(w);
     }
 
     @GetMapping("/{value}")
-    List<Customer> scanByAttributeByContent(@RequestBody CustomerName customerName, @PathVariable String value) {
+    List<Customer> scanByAttributeByContentName(@RequestBody Customer customer, @PathVariable String value) {
         return dynamoDbTemplate.scan(ScanEnhancedRequest.builder()
                 .filterExpression(Expression.builder()
                         .expression(value + " = :value")
                         .expressionValues(Map.of(":value", AttributeValue.builder()
-                                .s(customerName.name())
+                                .s(customer.getNameCustomer())
                                 .build()))
                         .build())
                 .build(), Customer.class)

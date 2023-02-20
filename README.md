@@ -7,7 +7,11 @@
    1. [Autoconfiguração no client do DynamoDB](#autoconfiguração-no-client-do-dynamodb)
    2. [Abstração dos métodos para operações no Dynamo](#abstração-dos-métodos-para-operações-no-dynamo)
    3. [Como utilizar](#como-utilizar)
-2. 
+      1. [Como declarar dependencia](#como-declarar-dependência)
+      2. [Modelagem da entidade](#modelagem-da-entidade)
+      3. [Realizando operações no dynamodb](#realizando-operações-no-dynamodb)
+2. [Configuração de ambiente local](x)
+3. [Configurações com o acelerador DAX](x)
 
 
 ## solução starter-dynamodb
@@ -109,6 +113,8 @@ Os métodos injetam em DynamoDbTable através do método em todas as chamadas de
 
 ### Como utilizar
 
+#### Como declarar dependência
+
 Exemplo de utilização standart sem a utilização do dax, primeiro adicione a dependência `spring-cloud-aws-starter-s3` no pom ou gradle.
 ```xml
 		<dependency>
@@ -122,6 +128,7 @@ Exemplo de utilização standart sem a utilização do dax, primeiro adicione a 
 implementation 'io.awspring.cloud:spring-cloud-aws-starter-dynamodb:3.0.0-RC1'
 ```
 
+#### Modelagem da entidade
 Para realizar as operações no banco do Dynamodb precisamos descrever o Bean da nossa entidade conforme abaixo.
 
 ```java
@@ -148,6 +155,129 @@ public class Customer {
 > **_NOTE:_**  a entidade precisa estar anotada com @DynamodbBean. Visto que a auto configuração do TableSchema estar apontando para o um Bean.
 > > **_WARNING:_**  A autoconfiguração do client é incompativel com a seguinte anotação Dynamo, @DynamoDbImmutable.
 
+#### Realizando operações no dynamodb
 
+Utilizando o starter web do spring vamos realizar chamadas aos endpoint para testar a integração com o serviço do dynamodb através da **localstack**
 
+```java
 
+@RestController
+class CustomerController {
+   private static final Logger LOGGER = LoggerFactory.getLogger(CustomerController.class);
+   private final DynamoDbTemplate dynamoDbTemplate;
+
+   CustomerController(DynamoDbTemplate dynamoDbTemplate) {
+      this.dynamoDbTemplate = dynamoDbTemplate;
+   }
+
+   @GetMapping("/customers")
+   List<Customer> customers() {
+      return dynamoDbTemplate.scanAll(Customer.class).items().stream().toList();
+   }
+
+   @PostMapping("/customers")
+   void create(@RequestBody CustomerDto customerDto) {
+      LOGGER.info("Creating customer: {}", customerDto);
+      dynamoDbTemplate.save(new Customer(customerDto.name(), customerDto.age()));
+   }
+   @GetMapping("register/{id}")
+   Customer getById(@PathVariable String id){
+      LOGGER.info("get customer by id: {}", id);
+      return dynamoDbTemplate.load(Key.builder().partitionValue(id).build(), Customer.class);
+   }
+   @PutMapping
+   void test(Customer w) {
+      LOGGER.info("update customer: {}", w);
+      dynamoDbTemplate.update(w);
+   }
+
+   @GetMapping("/{value}")
+   List<Customer> scanByAttributeByContent(@RequestBody CustomerName customerName, @PathVariable String value) {
+      return dynamoDbTemplate.scan(ScanEnhancedRequest.builder()
+                      .filterExpression(Expression.builder()
+                              .expression(value + " = :value")
+                              .expressionValues(Map.of(":value", AttributeValue.builder()
+                                      .s(customerName.name())
+                                      .build()))
+                              .build())
+                      .build(), Customer.class)
+              .items().stream().toList();
+   }
+
+   @GetMapping
+   List<Customer> scanByAttributeByContent(@RequestBody Customer customer, @PathVariable String value) {
+      return dynamoDbTemplate.query(QueryEnhancedRequest.builder()
+              .filterExpression(Expression.builder()
+                      .expression(value + ": value")
+                      .expressionValues(Map.of(":value", AttributeValue.builder().s(customer.getAge()).build())).build())
+              .queryConditional(QueryConditional.keyEqualTo(Key.builder()
+                      .partitionValue(customer.getId())
+                      .build()))
+              .build(), Customer.class).items().stream().toList();
+   }
+}
+```
+
+Para criar um dado através do Dynamo
+```shell
+curl --location 'localhost:8080/customers' \
+--header 'Content-Type: application/json' \
+--data '{
+    "nameCustomer": "teste-name",
+    "age": "23"
+}'
+```
+
+Para retornar todos os items cadastrados no Dynamodb 
+```shell
+curl --location 'localhost:8080/customers'
+```
+
+exemplo de resposta:
+
+```json
+[
+    {
+        "id": "01d4bda3-c305-436a-a27d-2b476488eff8",
+        "name": "teste-name",
+        "age": "23"
+    }
+]
+```
+
+Com esse ID podemos fazer uma requisição passando o ID para nos retornar a entidade
+
+```shell
+curl --location 'localhost:8080/register/{ID}'
+```
+exemplo de resposta:
+
+```json
+{
+   "id": "4bea4b53-e711-43d1-a23f-7b811d954180",
+   "nameCustomer": "teste-name",
+   "age": "23"
+}
+```
+
+para retornar através dos campos
+
+```shell
+curl --location --request GET 'localhost:8080/nameCustomer' \
+--header 'Content-Type: application/json' \
+--data '{
+    "nameCustomer": "teste-name"
+}'
+```
+
+Exemplo de resposta
+
+```json
+[
+    {
+        "id": "4bea4b53-e711-43d1-a23f-7b811d954180",
+        "nameCustomer": "teste-name",
+        "age": "23"
+    }
+]
+```
