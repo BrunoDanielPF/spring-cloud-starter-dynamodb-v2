@@ -10,7 +10,7 @@
       1. [Como declarar dependencia](#como-declarar-dependência)
       2. [Modelagem da entidade](#modelagem-da-entidade)
       3. [Realizando operações no dynamodb](#realizando-operações-no-dynamodb)
-2. [Configuração de ambiente local](x)
+2. [Configuração de ambiente local](x):construction_worker:
 3. [Configurações com o acelerador DAX](x)
 
 
@@ -281,3 +281,11 @@ Exemplo de resposta
     }
 ]
 ```
+
+## Configuração de ambiente local
+<H1>WORKING ...</H1>
+![img_1.png](img_1.png)
+
+## Configurações com o acelerador DAX
+<H1>WORKING ...</H1>
+![img_1.png](img_1.png)
