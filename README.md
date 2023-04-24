@@ -115,7 +115,7 @@ Os métodos injetam em DynamoDbTable através do método em todas as chamadas de
 
 #### Como declarar dependência
 
-Exemplo de utilização standart sem a utilização do dax, primeiro adicione a dependência `spring-cloud-aws-starter-s3` no pom ou gradle.
+Exemplo de utilização standart sem a utilização do dax, primeiro adicione a dependência `spring-cloud-aws-starter-dynamodb` no pom ou gradle.
 ```xml
 		<dependency>
 			<groupId>io.awspring.cloud</groupId>
